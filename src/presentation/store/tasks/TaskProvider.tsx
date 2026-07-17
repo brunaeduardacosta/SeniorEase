@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { Task } from "../../../domain/entities/Task";
 import { TaskContext } from "./TaskContext";
 import { loadTasks, saveTasks } from "../../../infrastructure/storage/taskStorage";
+import { createTask, toggleTask, editTask as useCaseEditTask, deleteTask as useCaseDeleteTask } from "../../../domain/usecases/taskUseCases";
 
 export function TaskProvider({ children }: { children: React.ReactNode }) {
   const [tasks, setTasks] = useState<Task[]>(loadTasks);
@@ -12,36 +13,24 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
   }, [tasks]);
 
   function addTask(title: string) {
-    const newTask: Task = {
-      id: crypto.randomUUID(),
-      title,
-      completed: false,
-      createdAt: new Date().toISOString(),
-    };
-
+    const newTask = createTask(title);
     setTasks((prev) => [...prev, newTask]);
   }
 
   function toggleTaskById(id: string) {
     setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id
-          ? { ...task, completed: !task.completed }
-          : task
-      )
+      prev.map((task) => (task.id === id ? toggleTask(task) : task))
     );
   }
 
   function editTask(id: string, title: string) {
     setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, title } : task
-      )
+      prev.map((task) => (task.id === id ? useCaseEditTask(task, title) : task))
     );
   }
 
   function deleteTask(id: string) {
-    setTasks((prev) => prev.filter((task) => task.id !== id));
+    setTasks((prev) => useCaseDeleteTask(prev, id));
   }
 
   return (

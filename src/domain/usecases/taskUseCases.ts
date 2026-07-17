@@ -5,7 +5,7 @@ export function createTask(title: string): Task {
     id: crypto.randomUUID(),
     title,
     completed: false,
-    createdAt: new Date(),
+    createdAt: new Date().toISOString(),
   };
 }
 
@@ -14,4 +14,15 @@ export function toggleTask(task: Task): Task {
     ...task,
     completed: !task.completed,
   };
+}
+
+export function editTask(task: Task, newTitle: string): Task {
+  return {
+    ...task,
+    title: newTitle,
+  };
+}
+
+export function deleteTask(tasks: Task[], idToDelete: string): Task[] {
+  return tasks.filter((task) => task.id !== idToDelete);
 }

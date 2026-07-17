@@ -9,15 +9,9 @@ export function Header() {
 
   return (
     <header
+      className="app-header"
       style={{
-        height: "80px",
-        background: "#FFFFFF",
         borderBottom: highContrast ? "2px solid #000" : "1px solid #E2E8F0",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "0 30px",
-        boxSizing: "border-box",
       }}
     >
       <div>
@@ -25,16 +19,19 @@ export function Header() {
           style={{
             margin: 0,
             color: highContrast ? "#000" : "#1E293B",
-            fontSize: fontSize + 8,
+            fontSize: fontSize + 6,
+            lineHeight: 1.2,
           }}
         >
-          Olá, {displayName} 👋
+          Olá, {displayName}
         </h2>
 
         <span
           style={{
             color: highContrast ? "#000" : "#64748B",
-            fontSize,
+            fontSize: fontSize - 1,
+            display: "block",
+            marginTop: "4px",
           }}
         >
           Bem-vindo ao SeniorEase
@@ -51,8 +48,9 @@ export function Header() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: fontSize + 4,
+          fontSize: fontSize + 2,
           fontWeight: 700,
+          flexShrink: 0,
         }}
       >
         {displayName.charAt(0).toUpperCase()}
