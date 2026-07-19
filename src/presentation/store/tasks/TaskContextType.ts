@@ -1,9 +1,40 @@
-import type { Task } from "../../../domain/entities/Task";
+import type {
+  Task,
+  TaskCategory,
+  TaskPriority,
+} from "../../../domain/entities/Task";
 
-export type TaskContextType = {
+
+export interface TaskContextType {
+
   tasks: Task[];
-  addTask: (title: string) => void;
-  toggleTaskById: (id: string) => void;
-  editTask: (id: string, title: string) => void;
-  deleteTask: (id: string) => void;
-};
+
+
+  addTask: (
+    title: string,
+    category: TaskCategory,
+    priority: TaskPriority
+  ) => void;
+
+
+
+  toggleTaskById: (
+    id: string
+  ) => void;
+
+
+
+  editTask: (
+    id: string,
+    title: string,
+    category: TaskCategory,
+    priority: TaskPriority
+  ) => void;
+
+
+
+  deleteTask: (
+    id: string
+  ) => void;
+
+}

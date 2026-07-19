@@ -1,11 +1,17 @@
-import type { Task } from "../entities/Task";
+import type { Task, TaskCategory, TaskPriority } from "../entities/Task";
 
-export function createTask(title: string): Task {
+export function createTask(
+  title: string,
+  category: TaskCategory = "Pessoal",
+  priority: TaskPriority = "Média"
+): Task {
   return {
     id: crypto.randomUUID(),
     title,
     completed: false,
     createdAt: new Date().toISOString(),
+    category,
+    priority,
   };
 }
 
@@ -16,10 +22,17 @@ export function toggleTask(task: Task): Task {
   };
 }
 
-export function editTask(task: Task, newTitle: string): Task {
+export function editTask(
+  task: Task,
+  newTitle: string,
+  category: TaskCategory,
+  priority: TaskPriority
+): Task {
   return {
     ...task,
     title: newTitle,
+    category,
+    priority,
   };
 }
 

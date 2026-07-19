@@ -16,6 +16,35 @@ export function TaskCard({
 }: TaskCardProps) {
   const { fontSize, highContrast } = useAccessibility();
 
+
+  const priorityTheme = {
+    Alta: {
+      border: "#DC2626",
+      background: "#FEF2F2",
+      text: "#991B1B",
+      label: "🔴 Alta",
+    },
+
+    Média: {
+      border: "#F59E0B",
+      background: "#FFFBEB",
+      text: "#92400E",
+      label: "🟡 Média",
+    },
+
+    Baixa: {
+      border: "#16A34A",
+      background: "#F0FDF4",
+      text: "#166534",
+      label: "🟢 Baixa",
+    },
+  };
+
+
+  const priority =
+    priorityTheme[task.priority] ?? priorityTheme["Média"];
+
+
   const currentTheme = highContrast
     ? {
         background: "#FFFFFF",
@@ -27,20 +56,23 @@ export function TaskCard({
         badgeBorder: "#000",
       }
     : {
-        background: "#FFFFFF",
+        background: priority.background,
         text: "#1E293B",
-        border: "transparent",
-        shadow: "0 10px 25px rgba(0, 0, 0, 0.04)",
+        border: priority.border,
+        shadow: "0 10px 25px rgba(0,0,0,0.06)",
         badgeBg: task.completed ? "#DCFCE7" : "#F1F5F9",
         badgeText: task.completed ? "#166534" : "#475569",
         badgeBorder: "transparent",
       };
 
+
   return (
     <div
       style={{
         background: currentTheme.background,
-        border: highContrast ? `3px solid ${currentTheme.border}` : `1px solid #F1F5F9`,
+        border: highContrast
+          ? `3px solid ${currentTheme.border}`
+          : `2px solid ${priority.border}`,
         borderRadius: "24px",
         padding: "28px",
         marginBottom: "24px",
@@ -48,113 +80,189 @@ export function TaskCard({
         display: "flex",
         flexDirection: "column",
         gap: "24px",
-        transition: "transform 0.2s ease, box-shadow 0.2s ease",
+        transition: "transform 0.2s ease",
       }}
+
       onMouseEnter={(e) => {
         if (!highContrast) {
           e.currentTarget.style.transform = "translateY(-4px)";
-          e.currentTarget.style.boxShadow = "0 15px 35px rgba(0, 0, 0, 0.08)";
         }
       }}
+
       onMouseLeave={(e) => {
-        if (!highContrast) {
-          e.currentTarget.style.transform = "translateY(0)";
-          e.currentTarget.style.boxShadow = currentTheme.shadow;
-        }
+        e.currentTarget.style.transform = "translateY(0)";
       }}
     >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "16px" }}>
-        <div style={{ flex: "1 1 200px" }}>
-          <span
+
+      <div
+        style={{
+          display:"flex",
+          justifyContent:"space-between",
+          alignItems:"flex-start",
+          flexWrap:"wrap",
+          gap:"15px"
+        }}
+      >
+
+        <div style={{flex:1}}>
+
+
+          <div
             style={{
-              display: "inline-block",
-              background: currentTheme.badgeBg,
-              color: currentTheme.badgeText,
-              border: `1px solid ${currentTheme.badgeBorder}`,
-              padding: "6px 14px",
-              borderRadius: "20px",
-              fontSize: fontSize - 2,
-              fontWeight: 700,
-              textTransform: "uppercase",
-              letterSpacing: "0.5px",
-              marginBottom: "12px",
+              display:"flex",
+              flexWrap:"wrap",
+              gap:"10px",
+              marginBottom:"15px"
             }}
           >
-            {task.completed ? "Concluída" : "Pendente"}
-          </span>
-          
+
+            <span
+              style={{
+                background:currentTheme.badgeBg,
+                color:currentTheme.badgeText,
+                border:`1px solid ${currentTheme.badgeBorder}`,
+                padding:"6px 14px",
+                borderRadius:"20px",
+                fontSize:fontSize-2,
+                fontWeight:700
+              }}
+            >
+              {task.completed 
+                ? "✓ Concluída"
+                : "⏳ Pendente"}
+            </span>
+
+
+            <span
+              style={{
+                background:priority.background,
+                color:priority.text,
+                border:`1px solid ${priority.border}`,
+                padding:"6px 14px",
+                borderRadius:"20px",
+                fontSize:fontSize-2,
+                fontWeight:700
+              }}
+            >
+              {priority.label}
+            </span>
+
+
+            <span
+              style={{
+                background:"#F8FAFC",
+                color:"#475569",
+                padding:"6px 14px",
+                borderRadius:"20px",
+                fontSize:fontSize-2,
+                fontWeight:600
+              }}
+            >
+              📁 {task.category}
+            </span>
+
+          </div>
+
+
+
           <h2
             style={{
-              margin: 0,
-              fontSize: fontSize + 8,
-              fontWeight: 800,
-              color: currentTheme.text,
-              textDecoration: task.completed ? "line-through" : "none",
-              opacity: task.completed ? 0.6 : 1,
-              lineHeight: 1.3,
+              margin:0,
+              fontSize:fontSize+8,
+              fontWeight:800,
+              color:currentTheme.text,
+              textDecoration:task.completed
+                ? "line-through"
+                : "none",
+              opacity:task.completed ? 0.6 : 1
             }}
           >
             {task.title}
           </h2>
+
+
         </div>
+
+
 
         <button
           onClick={onToggle}
           style={{
-            padding: "16px 28px",
-            fontSize: fontSize + 2,
-            fontWeight: 700,
-            borderRadius: "16px",
-            border: highContrast ? "3px solid #000" : "none",
-            cursor: "pointer",
-            background: task.completed ? (highContrast ? "#000" : "#16A34A") : (highContrast ? "#FFF" : "#2563EB"),
-            color: task.completed && highContrast ? "#FFF" : (!task.completed && highContrast ? "#000" : "#FFF"),
-            flex: "0 1 auto",
-            boxShadow: !highContrast ? "0 4px 12px rgba(0,0,0,0.15)" : "none",
-            transition: "all 0.2s ease",
-          }}
-          onMouseEnter={(e) => {
-            if (!highContrast) e.currentTarget.style.transform = "scale(1.05)";
-          }}
-          onMouseLeave={(e) => {
-            if (!highContrast) e.currentTarget.style.transform = "scale(1)";
+            padding:"16px 28px",
+            fontSize:fontSize+2,
+            fontWeight:700,
+            borderRadius:"16px",
+            border:"none",
+            cursor:"pointer",
+            background:task.completed
+              ? "#16A34A"
+              : "#2563EB",
+            color:"#FFF"
           }}
         >
-          {task.completed ? "✓ Desfazer" : "Concluir Tarefa"}
+          {
+            task.completed
+              ? "✓ Desfazer"
+              : "Concluir"
+          }
         </button>
+
+
       </div>
 
-      <div style={{ height: "1px", background: highContrast ? "#000" : "#E2E8F0", width: "100%" }} />
 
-      <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-        <button onClick={onEdit} style={{ ...actionButtonStyle, fontSize }}>
+
+      <div
+        style={{
+          height:"1px",
+          background:"#E2E8F0"
+        }}
+      />
+
+
+
+      <div
+        style={{
+          display:"flex",
+          gap:"12px"
+        }}
+      >
+
+        <button
+          onClick={onEdit}
+          style={actionButtonStyle}
+        >
           ✏️ Editar
         </button>
+
 
         <button
           onClick={onDelete}
           style={{
             ...actionButtonStyle,
-            fontSize,
-            color: highContrast ? "#000" : "#DC2626",
-            background: highContrast ? "#FFF" : "#FEF2F2",
+            color:"#DC2626",
+            background:"#FEF2F2"
           }}
         >
           🗑 Excluir
         </button>
+
       </div>
+
+
     </div>
   );
 }
 
+
+
 const actionButtonStyle = {
-  padding: "12px 20px",
-  borderRadius: "12px",
-  border: "none",
-  cursor: "pointer",
-  background: "#F1F5F9",
-  color: "#475569",
-  fontWeight: 600,
-  flex: "1 1 120px",
-  transition: "all 0.2s ease",
+  padding:"12px 20px",
+  borderRadius:"12px",
+  border:"none",
+  cursor:"pointer",
+  background:"#F1F5F9",
+  color:"#475569",
+  fontWeight:600,
+  flex:1,
 };

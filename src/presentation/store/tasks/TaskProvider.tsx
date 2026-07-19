@@ -1,19 +1,23 @@
 import { useEffect, useState } from "react";
-import type { Task } from "../../../domain/entities/Task";
+import type { Task, TaskCategory, TaskPriority } from "../../../domain/entities/Task";
 import { TaskContext } from "./TaskContext";
 import { loadTasks, saveTasks } from "../../../infrastructure/storage/taskStorage";
-import { createTask, toggleTask, editTask as useCaseEditTask, deleteTask as useCaseDeleteTask } from "../../../domain/usecases/taskUseCases";
+import {
+  createTask,
+  toggleTask,
+  editTask as editTaskUseCase,
+  deleteTask as deleteTaskUseCase,
+} from "../../../domain/usecases/taskUseCases";
 
 export function TaskProvider({ children }: { children: React.ReactNode }) {
   const [tasks, setTasks] = useState<Task[]>(loadTasks);
 
-  // salvar automaticamente
   useEffect(() => {
     saveTasks(tasks);
   }, [tasks]);
 
-  function addTask(title: string) {
-    const newTask = createTask(title);
+  function addTask(title: string, category: TaskCategory, priority: TaskPriority) {
+    const newTask = createTask(title, category, priority);
     setTasks((prev) => [...prev, newTask]);
   }
 
@@ -23,14 +27,14 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     );
   }
 
-  function editTask(id: string, title: string) {
+  function editTask(id: string, title: string, category: TaskCategory, priority: TaskPriority) {
     setTasks((prev) =>
-      prev.map((task) => (task.id === id ? useCaseEditTask(task, title) : task))
+      prev.map((task) => (task.id === id ? editTaskUseCase(task, title, category, priority) : task))
     );
   }
 
   function deleteTask(id: string) {
-    setTasks((prev) => useCaseDeleteTask(prev, id));
+    setTasks((prev) => deleteTaskUseCase(prev, id));
   }
 
   return (

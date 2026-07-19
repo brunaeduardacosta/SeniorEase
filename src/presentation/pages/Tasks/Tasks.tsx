@@ -1,14 +1,12 @@
 import { useState } from "react";
-
+import type { TaskCategory, TaskPriority } from "../../../domain/entities/Task";
 import { MainLayout } from "../../layouts/MainLayout";
 import { Card } from "../../components/ui/Card/Card";
 import { TaskCard } from "../../components/ui/TaskCard/TaskCard";
 import { PageTitle } from "../../components/ui/PageTitle/PageTitle";
 import { Input } from "../../components/ui/Input/Input";
-
 import { useTasks } from "../../store/tasks/useTasks";
 import { useAccessibility } from "../../contexts/accessibility/useAccessibility";
-
 import { TaskDeleteModal } from "./components/TaskDeleteModal";
 import { TaskCreationWizard } from "./components/TaskCreationWizard";
 import { TaskTabs } from "./components/TaskTabs";
@@ -21,6 +19,8 @@ export function Tasks() {
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState("");
+  const [editingCategory, setEditingCategory] = useState<TaskCategory>("Pessoal");
+  const [editingPriority, setEditingPriority] = useState<TaskPriority>("Média");
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const [showHistory, setShowHistory] = useState(false);
@@ -34,37 +34,42 @@ export function Tasks() {
     }, 3000);
   }
 
-  function handleConfirmCreate(title: string) {
-    addTask(title);
+  function handleConfirmCreate(title: string, category: TaskCategory, priority: TaskPriority) {
+    addTask(title, category, priority);
     showFeedback("Tarefa adicionada com sucesso!");
     setShowHistory(false);
   }
 
-  function startEdit(id: string, text: string) {
+  function startEdit(id: string, text: string, category: TaskCategory, priority: TaskPriority) {
     setEditingId(id);
     setEditingText(text);
+    setEditingCategory(category);
+    setEditingPriority(priority);
   }
 
   function saveEdit() {
     if (!editingId || !editingText.trim()) return;
 
-    editTask(editingId, editingText);
+    editTask(editingId, editingText, editingCategory, editingPriority);
     setEditingId(null);
     setEditingText("");
-    showFeedback("Tarefa alterada com sucesso!");
+    setEditingCategory("Pessoal");
+    setEditingPriority("Média");
+    showFeedback("Tarefa alteredada com sucesso!");
   }
 
   function cancelEdit() {
     setEditingId(null);
     setEditingText("");
+    setEditingCategory("Pessoal");
+    setEditingPriority("Média");
   }
 
   function handleToggle(id: string) {
-    toggleTaskById(id);
     const task = tasks.find((t) => t.id === id);
-    if (!task) return;
+    toggleTaskById(id);
 
-    if (!task.completed) {
+    if (task && !task.completed) {
       showFeedback("Tarefa concluída!");
     } else {
       showFeedback("Tarefa reaberta.");
@@ -105,12 +110,8 @@ export function Tasks() {
         title={showHistory ? "Histórico de tarefas" : "Minhas tarefas"}
         subtitle={
           simplifiedMode
-            ? showHistory
-              ? "Tarefas já concluídas."
-              : "Gerencie suas atividades."
-            : showHistory
-            ? "Veja todas as tarefas concluídas."
-            : "Crie, organize e acompanhe suas tarefas."
+            ? showHistory ? "Tarefas já concluídas." : "Gerencie suas atividades."
+            : showHistory ? "Veja todas as tarefas concluídas." : "Crie, organize e acompanhe suas tarefas."
         }
       />
 
@@ -118,16 +119,7 @@ export function Tasks() {
 
       <TaskTabs showHistory={showHistory} setShowHistory={setShowHistory} />
 
-      <div
-        style={{
-          display: "flex",
-          gap: 15,
-          marginTop: 20,
-          marginBottom: 20,
-          alignItems: "center",
-          flexWrap: "wrap",
-        }}
-      >
+      <div style={{ display: "flex", gap: 15, marginTop: 20, marginBottom: 20, flexWrap: "wrap" }}>
         <div style={{ flex: 1, minWidth: 260 }}>
           <Input
             placeholder="Pesquisar tarefa..."
@@ -139,12 +131,7 @@ export function Tasks() {
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as "recent" | "old" | "az" | "za")}
-          style={{
-            padding: "12px",
-            borderRadius: "8px",
-            border: "1px solid #CBD5E1",
-            minWidth: "180px",
-          }}
+          style={{ padding: "12px", borderRadius: "8px", border: "1px solid #CBD5E1" }}
         >
           <option value="recent">Mais recentes</option>
           <option value="old">Mais antigas</option>
@@ -154,10 +141,7 @@ export function Tasks() {
       </div>
 
       {!showHistory && (
-        <TaskCreationWizard
-          onConfirmCreate={handleConfirmCreate}
-          showFeedback={showFeedback}
-        />
+        <TaskCreationWizard onConfirmCreate={handleConfirmCreate} showFeedback={showFeedback} />
       )}
 
       <div style={{ marginTop: 30 }}>
@@ -178,6 +162,10 @@ export function Tasks() {
                 <TaskEditForm
                   editingText={editingText}
                   setEditingText={setEditingText}
+                  category={editingCategory}
+                  setCategory={setEditingCategory}
+                  priority={editingPriority}
+                  setPriority={setEditingPriority}
                   onSave={saveEdit}
                   onCancel={cancelEdit}
                 />
@@ -185,7 +173,7 @@ export function Tasks() {
                 <TaskCard
                   task={task}
                   onToggle={() => handleToggle(task.id)}
-                  onEdit={() => startEdit(task.id, task.title)}
+                  onEdit={() => startEdit(task.id, task.title, task.category, task.priority)}
                   onDelete={() => setTaskToDelete(task.id)}
                 />
               )}
@@ -195,10 +183,7 @@ export function Tasks() {
       </div>
 
       {taskToDelete && (
-        <TaskDeleteModal
-          onCancel={() => setTaskToDelete(null)}
-          onConfirm={confirmDelete}
-        />
+        <TaskDeleteModal onCancel={() => setTaskToDelete(null)} onConfirm={confirmDelete} />
       )}
     </MainLayout>
   );

@@ -9,4 +9,6 @@ export type AccessibilityContextType = {
   setElementSpacing: (value: "small" | "medium" | "large")=>void;
   largeCursor: boolean;
   setLargeCursor: (value: boolean) => void;
+  extraConfirmation: boolean;
+setExtraConfirmation: (value: boolean) => void;
 };

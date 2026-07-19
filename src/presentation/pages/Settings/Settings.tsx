@@ -1,7 +1,6 @@
 import { MainLayout } from "../../layouts/MainLayout";
 import { PageTitle } from "../../components/ui/PageTitle/PageTitle";
 import { useAccessibility } from "../../contexts/accessibility/useAccessibility";
-
 import { FontSizeSetting } from "./components/FontSizeSetting";
 import { SpacingSetting } from "./components/SpacingSetting";
 import { ToggleSetting } from "./components/ToggleSetting";
@@ -14,6 +13,8 @@ export function Settings() {
     setSimplifiedMode,
     largeCursor,
     setLargeCursor,
+    extraConfirmation,
+    setExtraConfirmation,
   } = useAccessibility();
 
   return (
@@ -29,7 +30,6 @@ export function Settings() {
 
       <div style={{ maxWidth: "800px" }}>
         <FontSizeSetting />
-        
         <SpacingSetting />
 
         <ToggleSetting
@@ -54,6 +54,14 @@ export function Settings() {
           description="Remove textos e decorações não essenciais para ajudar a manter o foco no que importa."
           isActive={simplifiedMode}
           onToggle={setSimplifiedMode}
+        />
+
+        <ToggleSetting
+          icon="⚠️"
+          title="Confirmação antes de ações importantes"
+          description="Solicita uma confirmação extra antes de excluir ou realizar ações que não podem ser desfeitas."
+          isActive={extraConfirmation}
+          onToggle={setExtraConfirmation}
         />
       </div>
     </MainLayout>

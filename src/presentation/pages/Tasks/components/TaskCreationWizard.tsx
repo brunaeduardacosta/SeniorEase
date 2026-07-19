@@ -1,19 +1,24 @@
 import { useState } from "react";
 import { useAccessibility } from "../../../contexts/accessibility/useAccessibility";
+import type { TaskCategory, TaskPriority } from "../../../../domain/entities/Task";
 
 type TaskCreationWizardProps = {
-  onConfirmCreate: (title: string) => void;
+  onConfirmCreate: (title: string, category: TaskCategory, priority: TaskPriority) => void;
   showFeedback: (msg: string) => void;
 };
 
 export function TaskCreationWizard({ onConfirmCreate, showFeedback }: TaskCreationWizardProps) {
-  const { fontSize, highContrast } = useAccessibility();
+  const { fontSize, highContrast, extraConfirmation } = useAccessibility();
   const [creationStep, setCreationStep] = useState<number>(0);
   const [title, setTitle] = useState("");
+  const [category, setCategory] = useState<TaskCategory>("Pessoal");
+  const [priority, setPriority] = useState<TaskPriority>("Média");
 
   function handleStartCreate() {
     setCreationStep(1);
     setTitle("");
+    setCategory("Pessoal");
+    setPriority("Média");
   }
 
   function handleNextStep() {
@@ -25,8 +30,15 @@ export function TaskCreationWizard({ onConfirmCreate, showFeedback }: TaskCreati
   }
 
   function handleConfirmCreate() {
-    onConfirmCreate(title);
+    if (extraConfirmation) {
+      setCreationStep(3);
+      return;
+    }
+
+    onConfirmCreate(title, category, priority);
     setTitle("");
+    setCategory("Pessoal");
+    setPriority("Média");
     setCreationStep(0);
   }
 
@@ -53,8 +65,6 @@ export function TaskCreationWizard({ onConfirmCreate, showFeedback }: TaskCreati
     cursor: "pointer",
     background: highContrast ? "#000" : "#2563EB",
     color: "#FFF",
-    boxShadow: highContrast ? "none" : "0 4px 12px rgba(37,99,235,0.2)",
-    transition: "transform 0.2s ease",
   };
 
   const secondaryBtn = {
@@ -62,21 +72,17 @@ export function TaskCreationWizard({ onConfirmCreate, showFeedback }: TaskCreati
     fontSize: fontSize + 2,
     fontWeight: 700,
     borderRadius: "16px",
-    border: "none",
     cursor: "pointer",
     background: highContrast ? "#FFF" : "#F1F5F9",
     color: highContrast ? "#000" : "#475569",
-    borderWidth: highContrast ? "3px" : "0",
-    borderStyle: "solid",
-    borderColor: "#000",
-    transition: "transform 0.2s ease",
+    border: "2px solid #CBD5E1",
   };
 
   return (
     <div style={cardStyle}>
       {creationStep === 0 && (
         <div style={{ textAlign: "center", padding: "10px 0" }}>
-          <h2 style={{ fontSize: fontSize + 8, marginBottom: "20px", color: highContrast ? "#000" : "#1E293B" }}>
+          <h2 style={{ fontSize: fontSize + 8, marginBottom: 20 }}>
             Adicionar nova tarefa
           </h2>
           <button style={primaryBtn} onClick={handleStartCreate}>
@@ -87,15 +93,14 @@ export function TaskCreationWizard({ onConfirmCreate, showFeedback }: TaskCreati
 
       {creationStep === 1 && (
         <div>
-          <h2 style={{ fontSize: fontSize + 8, color: highContrast ? "#000" : "#1E293B", margin: "0 0 10px 0" }}>
+          <h2 style={{ fontSize: fontSize + 8 }}>
             Passo 1: O que você precisa fazer?
           </h2>
-          <p style={{ fontSize, color: highContrast ? "#000" : "#64748B", marginBottom: "24px" }}>
-            Digite o nome da sua tarefa abaixo.
+          <p style={{ fontSize }}>
+            Digite o nome da sua tarefa.
           </p>
-          
           <input
-            placeholder="Ex: Tomar o remédio de pressão"
+            placeholder="Ex: Entregar trabalho da faculdade"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             autoFocus
@@ -104,21 +109,17 @@ export function TaskCreationWizard({ onConfirmCreate, showFeedback }: TaskCreati
               padding: "20px",
               fontSize: fontSize + 4,
               borderRadius: "16px",
-              border: highContrast ? "3px solid #000" : "2px solid #CBD5E1",
-              outline: "none",
-              background: "#F8FAFC",
-              color: "#0F172A",
-              marginBottom: "30px",
-              boxSizing: "border-box",
+              border: "2px solid #CBD5E1",
+              marginBottom: 30,
+              boxSizing: "border-box"
             }}
           />
-          
-          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-            <button style={{ ...secondaryBtn, flex: "1 1 auto" }} onClick={handleCancelCreate}>
+          <div style={{ display: "flex", gap: 16 }}>
+            <button style={secondaryBtn} onClick={handleCancelCreate}>
               Cancelar
             </button>
-            <button style={{ ...primaryBtn, flex: "2 1 auto" }} onClick={handleNextStep}>
-              Próximo passo ➔
+            <button style={primaryBtn} onClick={handleNextStep}>
+              Próximo ➔
             </button>
           </div>
         </div>
@@ -126,33 +127,110 @@ export function TaskCreationWizard({ onConfirmCreate, showFeedback }: TaskCreati
 
       {creationStep === 2 && (
         <div>
-          <h2 style={{ fontSize: fontSize + 8, color: highContrast ? "#000" : "#1E293B", margin: "0 0 10px 0" }}>
-            Passo 2: Confirme a tarefa
+          <h2 style={{ fontSize: fontSize + 8 }}>
+            Passo 2: Organize sua tarefa
           </h2>
-          <p style={{ fontSize, color: highContrast ? "#000" : "#64748B", marginBottom: "24px" }}>
-            A tarefa que você vai adicionar é:
-          </p>
-          
-          <div style={{
-            background: highContrast ? "#FFF" : "#EFF6FF",
-            border: highContrast ? "3px solid #000" : "2px dashed #93C5FD",
-            padding: "24px",
-            borderRadius: "16px",
-            fontSize: fontSize + 6,
-            fontWeight: 800,
-            color: highContrast ? "#000" : "#1E3A8A",
-            marginBottom: "30px",
-            textAlign: "center"
-          }}>
-            "{title}"
+          <div style={{ display: "flex", gap: 20, flexWrap: "wrap", marginBottom: 25 }}>
+            <div>
+              <label>Categoria</label>
+              <br />
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value as TaskCategory)}
+                style={{ padding: 14, borderRadius: 12, fontSize }}
+              >
+                <option value="Estudo">📚 Estudo</option>
+                <option value="Trabalho">💼 Trabalho</option>
+                <option value="Pessoal">🏠 Pessoal</option>
+              </select>
+            </div>
+
+            <div>
+              <label>Prioridade</label>
+              <br />
+              <select
+                value={priority}
+                onChange={(e) => setPriority(e.target.value as TaskPriority)}
+                style={{ padding: 14, borderRadius: 12, fontSize }}
+              >
+                <option value="Alta">🔴 Alta</option>
+                <option value="Média">🟡 Média</option>
+                <option value="Baixa">🟢 Baixa</option>
+              </select>
+            </div>
           </div>
-          
-          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-            <button style={{ ...secondaryBtn, flex: "1 1 auto" }} onClick={() => setCreationStep(1)}>
-              🠔 Voltar e corrigir
+
+          <div
+            style={{
+              padding: 24,
+              borderRadius: 16,
+              background: "#EFF6FF",
+              fontSize: fontSize + 4,
+              fontWeight: 700,
+              marginBottom: 30
+            }}
+          >
+            "{title}"
+            <br />
+            Categoria: {category}
+            <br />
+            Prioridade: {priority}
+          </div>
+
+          <div style={{ display: "flex", gap: 16 }}>
+            <button style={secondaryBtn} onClick={() => setCreationStep(1)}>
+              Voltar
             </button>
-            <button style={{ ...primaryBtn, flex: "2 1 auto", background: highContrast ? "#000" : "#16A34A", boxShadow: highContrast ? "none" : "0 4px 12px rgba(22, 163, 74, 0.2)" }} onClick={handleConfirmCreate}>
+            <button
+              style={{ ...primaryBtn, background: "#16A34A" }}
+              onClick={handleConfirmCreate}
+            >
               ✓ Confirmar e Salvar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {creationStep === 3 && (
+        <div>
+          <h2 style={{ fontSize: fontSize + 8, color: highContrast ? "#000" : "#1E293B" }}>
+            ⚠️ Confirmação final
+          </h2>
+          <p style={{ fontSize, marginBottom: "20px" }}>
+            Você tem certeza que deseja criar esta tarefa?
+          </p>
+          <div
+            style={{
+              background: "#EFF6FF",
+              padding: "20px",
+              borderRadius: "16px",
+              fontSize: fontSize + 3,
+              fontWeight: 700,
+              lineHeight: 1.8
+            }}
+          >
+            📌 Tarefa:<br />
+            {title}<br /><br />
+            📂 Categoria:<br />
+            {category}<br /><br />
+            ⚡ Prioridade:<br />
+            {priority}
+          </div>
+          <div style={{ display: "flex", gap: "15px", marginTop: "25px" }}>
+            <button onClick={() => setCreationStep(2)} style={secondaryBtn}>
+              Voltar
+            </button>
+            <button
+              onClick={() => {
+                onConfirmCreate(title, category, priority);
+                setTitle("");
+                setCategory("Pessoal");
+                setPriority("Média");
+                setCreationStep(0);
+              }}
+              style={primaryBtn}
+            >
+              ✓ Criar tarefa
             </button>
           </div>
         </div>
