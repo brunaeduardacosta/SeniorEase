@@ -4,6 +4,8 @@ import { MainLayout } from "../../layouts/MainLayout";
 import { Card } from "../../components/ui/Card/Card";
 import { TaskCard } from "../../components/ui/TaskCard/TaskCard";
 import { PageTitle } from "../../components/ui/PageTitle/PageTitle";
+import { Input } from "../../components/ui/Input/Input";
+
 import { useTasks } from "../../store/tasks/useTasks";
 import { useAccessibility } from "../../contexts/accessibility/useAccessibility";
 
@@ -19,15 +21,17 @@ export function Tasks() {
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState("");
-  
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState<"recent" | "old" | "az" | "za">("recent");
 
-  const [showHistory, setShowHistory] = useState<boolean>(false);
-
-  function showFeedback(msg: string) {
-    setFeedbackMessage(msg);
-    setTimeout(() => setFeedbackMessage(null), 3000);
+  function showFeedback(message: string) {
+    setFeedbackMessage(message);
+    setTimeout(() => {
+      setFeedbackMessage(null);
+    }, 3000);
   }
 
   function handleConfirmCreate(title: string) {
@@ -43,6 +47,7 @@ export function Tasks() {
 
   function saveEdit() {
     if (!editingId || !editingText.trim()) return;
+
     editTask(editingId, editingText);
     setEditingId(null);
     setEditingText("");
@@ -56,8 +61,10 @@ export function Tasks() {
 
   function handleToggle(id: string) {
     toggleTaskById(id);
-    const task = tasks.find(t => t.id === id);
-    if (task && !task.completed) {
+    const task = tasks.find((t) => t.id === id);
+    if (!task) return;
+
+    if (!task.completed) {
       showFeedback("Tarefa concluída!");
     } else {
       showFeedback("Tarefa reaberta.");
@@ -65,25 +72,45 @@ export function Tasks() {
   }
 
   function confirmDelete() {
-    if (taskToDelete) {
-      deleteTask(taskToDelete);
-      setTaskToDelete(null);
-      showFeedback("Tarefa excluída com sucesso!");
-    }
+    if (!taskToDelete) return;
+
+    deleteTask(taskToDelete);
+    setTaskToDelete(null);
+    showFeedback("Tarefa excluída com sucesso!");
   }
 
-  const pendingTasks = tasks.filter(t => !t.completed);
-  const completedTasks = tasks.filter(t => t.completed);
-  const tasksToDisplay = showHistory ? completedTasks : pendingTasks;
+  const pendingTasks = tasks.filter((task) => !task.completed);
+  const completedTasks = tasks.filter((task) => task.completed);
+
+  const tasksToDisplay = (showHistory ? completedTasks : pendingTasks).filter((task) =>
+    task.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const orderedTasks = [...tasksToDisplay].sort((a, b) => {
+    switch (sortBy) {
+      case "old":
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      case "az":
+        return a.title.localeCompare(b.title);
+      case "za":
+        return b.title.localeCompare(a.title);
+      default:
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+  });
 
   return (
     <MainLayout>
       <PageTitle
-        title={showHistory ? "Histórico de Tarefas" : "Minhas tarefas"}
+        title={showHistory ? "Histórico de tarefas" : "Minhas tarefas"}
         subtitle={
           simplifiedMode
-            ? (showHistory ? "Tarefas já feitas." : "Gerencie suas atividades.")
-            : (showHistory ? "Veja tudo o que você já concluiu." : "Crie, organize e acompanhe suas tarefas.")
+            ? showHistory
+              ? "Tarefas já concluídas."
+              : "Gerencie suas atividades."
+            : showHistory
+            ? "Veja todas as tarefas concluídas."
+            : "Crie, organize e acompanhe suas tarefas."
         }
       />
 
@@ -91,23 +118,64 @@ export function Tasks() {
 
       <TaskTabs showHistory={showHistory} setShowHistory={setShowHistory} />
 
+      <div
+        style={{
+          display: "flex",
+          gap: 15,
+          marginTop: 20,
+          marginBottom: 20,
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        <div style={{ flex: 1, minWidth: 260 }}>
+          <Input
+            placeholder="Pesquisar tarefa..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as "recent" | "old" | "az" | "za")}
+          style={{
+            padding: "12px",
+            borderRadius: "8px",
+            border: "1px solid #CBD5E1",
+            minWidth: "180px",
+          }}
+        >
+          <option value="recent">Mais recentes</option>
+          <option value="old">Mais antigas</option>
+          <option value="az">A → Z</option>
+          <option value="za">Z → A</option>
+        </select>
+      </div>
+
       {!showHistory && (
-        <TaskCreationWizard 
-          onConfirmCreate={handleConfirmCreate} 
-          showFeedback={showFeedback} 
+        <TaskCreationWizard
+          onConfirmCreate={handleConfirmCreate}
+          showFeedback={showFeedback}
         />
       )}
 
       <div style={{ marginTop: 30 }}>
-        {tasksToDisplay.length === 0 ? (
+        {orderedTasks.length === 0 ? (
           <Card>
-            <p>{showHistory ? "Nenhuma tarefa concluída no histórico." : "Você não tem nenhuma tarefa pendente no momento!"}</p>
+            <p>
+              {search.trim()
+                ? "Nenhuma tarefa encontrada."
+                : showHistory
+                ? "Nenhuma tarefa concluída no histórico."
+                : "Você não possui tarefas pendentes."}
+            </p>
           </Card>
         ) : (
-          tasksToDisplay.map((task) => (
-            <div key={task.id}>
+          orderedTasks.map((task) => (
+            <div key={task.id} style={{ marginBottom: 15 }}>
               {editingId === task.id ? (
-                <TaskEditForm 
+                <TaskEditForm
                   editingText={editingText}
                   setEditingText={setEditingText}
                   onSave={saveEdit}
@@ -127,7 +195,7 @@ export function Tasks() {
       </div>
 
       {taskToDelete && (
-        <TaskDeleteModal 
+        <TaskDeleteModal
           onCancel={() => setTaskToDelete(null)}
           onConfirm={confirmDelete}
         />

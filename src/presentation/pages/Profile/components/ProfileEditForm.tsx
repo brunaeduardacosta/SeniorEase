@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAccessibility } from "../../../contexts/accessibility/useAccessibility";
 
 type ProfileEditFormProps = {
@@ -11,15 +11,15 @@ export function ProfileEditForm({ currentName, onSave }: ProfileEditFormProps) {
   const [newName, setNewName] = useState(currentName);
   const [saved, setSaved] = useState(false);
 
-  useEffect(() => {
-    setNewName(currentName);
-  }, [currentName]);
-
   function handleSave() {
     if (!newName.trim()) return;
-    onSave(newName);
+
+    onSave(newName.trim());
     setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+
+    setTimeout(() => {
+      setSaved(false);
+    }, 3000);
   }
 
   return (
@@ -30,17 +30,31 @@ export function ProfileEditForm({ currentName, onSave }: ProfileEditFormProps) {
         borderRadius: "24px",
         padding: "28px",
         marginBottom: "24px",
-        boxShadow: highContrast ? "none" : "0 10px 25px rgba(0, 0, 0, 0.04)",
+        boxShadow: highContrast ? "none" : "0 10px 25px rgba(0,0,0,0.04)",
       }}
     >
-      <h3 style={{ fontSize: fontSize + 4, margin: "0 0 16px 0", color: highContrast ? "#000" : "#1E293B" }}>
+      <h3
+        style={{
+          fontSize: fontSize + 4,
+          margin: "0 0 16px 0",
+          color: highContrast ? "#000" : "#1E293B",
+        }}
+      >
         Editar Perfil
       </h3>
-      
-      <label style={{ display: "block", fontSize: fontSize, fontWeight: 700, marginBottom: "8px", color: highContrast ? "#000" : "#475569" }}>
+
+      <label
+        style={{
+          display: "block",
+          fontSize,
+          fontWeight: 700,
+          marginBottom: 8,
+          color: highContrast ? "#000" : "#475569",
+        }}
+      >
         Nome de Exibição
       </label>
-      
+
       <input
         value={newName}
         onChange={(e) => setNewName(e.target.value)}
@@ -56,7 +70,7 @@ export function ProfileEditForm({ currentName, onSave }: ProfileEditFormProps) {
           boxSizing: "border-box",
         }}
       />
-      
+
       <button
         onClick={handleSave}
         style={{
@@ -64,12 +78,10 @@ export function ProfileEditForm({ currentName, onSave }: ProfileEditFormProps) {
           fontSize: fontSize + 2,
           fontWeight: 700,
           borderRadius: "16px",
-          border: highContrast ? "3px solid #000" : "none",
+          border: "none",
           cursor: "pointer",
           background: highContrast ? "#000" : "#2563EB",
           color: "#FFF",
-          boxShadow: highContrast ? "none" : "0 4px 12px rgba(37,99,235,0.2)",
-          transition: "transform 0.2s ease",
           width: "100%",
         }}
       >
@@ -77,7 +89,15 @@ export function ProfileEditForm({ currentName, onSave }: ProfileEditFormProps) {
       </button>
 
       {saved && (
-        <div style={{ marginTop: "16px", color: "#16A34A", fontWeight: 700, fontSize: fontSize, textAlign: "center" }}>
+        <div
+          style={{
+            marginTop: "16px",
+            color: "#16A34A",
+            fontWeight: 700,
+            fontSize,
+            textAlign: "center",
+          }}
+        >
           ✅ Perfil atualizado com sucesso!
         </div>
       )}

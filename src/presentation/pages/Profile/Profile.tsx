@@ -1,32 +1,35 @@
 import { MainLayout } from "../../layouts/MainLayout";
 import { PageTitle } from "../../components/ui/PageTitle/PageTitle";
-import { useUser } from "../../contexts/user/useUser";
-import { useAccessibility } from "../../contexts/accessibility/useAccessibility";
-
 import { ProfileHeader } from "./components/ProfileHeader";
 import { ProfileEditForm } from "./components/ProfileEditForm";
 import { AccessibilityOverview } from "./components/AccessibilityOverview";
+import { useUser } from "../../contexts/user/useUser";
 
 export function Profile() {
   const { name, setName } = useUser();
-  const { simplifiedMode } = useAccessibility();
+
+  function handleSaveName(newName: string) {
+    setName(newName);
+  }
 
   return (
     <MainLayout>
       <PageTitle
         title="Meu perfil"
-        subtitle={
-          simplifiedMode 
-            ? "Seus dados no app." 
-            : "Gerencie suas informações pessoais e veja suas configurações de acessibilidade."
-        }
+        subtitle="Gerencie suas informações pessoais e acessibilidade."
       />
 
-      <div style={{ maxWidth: "800px" }}>
+      <div
+        style={{
+          display: "grid",
+          gap: 25,
+          maxWidth: 900,
+        }}
+      >
         <ProfileHeader name={name} />
-        
-        <ProfileEditForm currentName={name} onSave={setName} />
-        
+
+        <ProfileEditForm currentName={name} onSave={handleSaveName} />
+
         <AccessibilityOverview />
       </div>
     </MainLayout>
