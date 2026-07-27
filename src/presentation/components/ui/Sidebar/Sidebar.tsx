@@ -1,15 +1,57 @@
 import { NavLink, useNavigate } from "react-router-dom";
+
 import { useAccessibility } from "../../../contexts/accessibility/useAccessibility";
+import { useTheme } from "../../../styles/theme/useTheme";
 
 const navItems = [
-  { to: "/dashboard", icon: "🏠", label: "Início", description: "Resumo das suas atividades" },
-  { to: "/dashboard/tasks", icon: "📝", label: "Tarefas", description: "Organize suas atividades" },
-  { to: "/settings", icon: "⚙️", label: "Acessibilidade", description: "Ajuste sua experiência" },
-  { to: "/profile", icon: "👤", label: "Meu Perfil", description: "Seus dados pessoais" },
+  {
+    to: "/dashboard",
+    icon: "🏠",
+    label: "Início",
+    description: "Resumo das suas atividades",
+  },
+  {
+    to: "/calendar",
+    icon: "📅",
+    label: "Agenda",
+    description: "Seus compromissos",
+  },
+  {
+    to: "/dashboard/tasks",
+    icon: "📝",
+    label: "Tarefas",
+    description: "Organize suas atividades",
+  },
+  {
+    to: "/medicines",
+    icon: "💊",
+    label: "Medicamentos",
+    description: "Gerencie seus remédios",
+  },
+  {
+    to: "/medicines/history",
+    icon: "📋",
+    label: "Histórico",
+    description: "Medicamentos tomados",
+  },
+  {
+    to: "/settings",
+    icon: "⚙️",
+    label: "Acessibilidade",
+    description: "Ajuste sua experiência",
+  },
+  {
+    to: "/profile",
+    icon: "👤",
+    label: "Meu Perfil",
+    description: "Seus dados pessoais",
+  },
 ];
 
 export function Sidebar() {
   const navigate = useNavigate();
+  const theme = useTheme();
+
   const { fontSize, highContrast, simplifiedMode } = useAccessibility();
 
   const size = Math.max(fontSize, 18);
@@ -19,30 +61,69 @@ export function Sidebar() {
       style={{
         position: "sticky",
         top: 0,
-        left: 0,
         width: "280px",
         minWidth: "280px",
         height: "100vh",
-        padding: "20px",
+        padding: theme.spacing.sm,
         display: "flex",
         flexDirection: "column",
-        background: highContrast ? "#000" : "linear-gradient(180deg, #2563EB, #1D4ED8)",
-        boxShadow: "0 10px 30px rgba(0,0,0,.15)",
+        background: highContrast
+          ? theme.colors.text
+          : `linear-gradient(
+              180deg,
+              ${theme.colors.primary},
+              ${theme.colors.secondary}
+            )`,
+        boxShadow: theme.shadows.card,
         boxSizing: "border-box",
-        overflow: "hidden"
+        overflow: "hidden",
       }}
     >
       {/* LOGO */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: theme.spacing.xs,
+          marginBottom: theme.spacing.md,
+        }}
+      >
         <div style={{ fontSize: 32 }}>🌿</div>
+
         <div>
-          <h1 style={{ margin: 0, color: "#FFF", fontSize: 22 }}>SeniorEase</h1>
-          <p style={{ margin: 0, color: "#FFF", opacity: 0.9, fontSize: 12 }}>Tecnologia acessível</p>
+          <h1
+            style={{
+              margin: 0,
+              color: theme.colors.surface,
+              fontSize: 22,
+              fontWeight: 800,
+            }}
+          >
+            SeniorEase
+          </h1>
+
+          <p
+            style={{
+              margin: 0,
+              color: theme.colors.surface,
+              opacity: 0.85,
+              fontSize: 12,
+            }}
+          >
+            Tecnologia acessível
+          </p>
         </div>
       </div>
 
       {/* MENU */}
-      <nav style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
+      <nav
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: theme.spacing.xs,
+          marginBottom: theme.spacing.md,
+        }}
+      >
         {navItems.map((item) => (
           <NavLink
             key={item.to}
@@ -50,24 +131,41 @@ export function Sidebar() {
             end={item.to === "/dashboard"}
             style={({ isActive }) => ({
               textDecoration: "none",
-              padding: "10px 14px",
-              borderRadius: 14,
+              padding: "12px 14px",
+              borderRadius: theme.radius.md,
               display: "flex",
               alignItems: "center",
-              gap: 12,
-              background: isActive ? (highContrast ? "#FFF" : "rgba(255,255,255,.25)") : "transparent",
-              color: isActive && highContrast ? "#000" : "#FFF",
+              gap: theme.spacing.xs,
+              background: isActive
+                ? highContrast
+                  ? theme.colors.surface
+                  : "rgba(255,255,255,.25)"
+                : "transparent",
+              color:
+                isActive && highContrast
+                  ? theme.colors.text
+                  : theme.colors.surface,
               fontSize: size,
               fontWeight: 700,
-              border: isActive ? "2px solid #FFF" : "2px solid transparent",
-              boxSizing: "border-box"
+              border: isActive
+                ? `2px solid ${theme.colors.surface}`
+                : "2px solid transparent",
             })}
           >
             <span style={{ fontSize: size + 4 }}>{item.icon}</span>
+
             <div>
               <div>{item.label}</div>
+
               {!simplifiedMode && (
-                <small style={{ opacity: 0.8, fontWeight: 400, display: "block", fontSize: size - 4 }}>
+                <small
+                  style={{
+                    opacity: 0.8,
+                    fontWeight: 400,
+                    display: "block",
+                    fontSize: size - 4,
+                  }}
+                >
                   {item.description}
                 </small>
               )}
@@ -76,19 +174,28 @@ export function Sidebar() {
         ))}
       </nav>
 
-      {/* AÇÕES FIXAS NO RODAPÉ DA SIDEBAR */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: "auto" }}>
+      {/* RODAPÉ */}
+      <div
+        style={{
+          marginTop: "auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: theme.spacing.xs,
+        }}
+      >
         <button
           style={{
-            padding: 14,
-            borderRadius: 14,
-            border: highContrast ? "2px solid #FFF" : "none",
+            padding: theme.spacing.sm,
+            borderRadius: theme.radius.md,
+            border: highContrast ? `2px solid ${theme.colors.surface}` : "none",
             fontSize: size,
             fontWeight: 700,
             cursor: "pointer",
             fontFamily: "inherit",
-            background: highContrast ? "#000" : "#F8FAFC",
-            color: highContrast ? "#FFF" : "#1E293B"
+            background: highContrast
+              ? theme.colors.text
+              : theme.colors.surface,
+            color: highContrast ? theme.colors.surface : theme.colors.text,
           }}
         >
           ❓ Preciso de ajuda
@@ -97,22 +204,33 @@ export function Sidebar() {
         <button
           onClick={() => navigate("/")}
           style={{
-            padding: 14,
-            borderRadius: 14,
-            border: highContrast ? "2px solid #FFF" : "none",
+            padding: theme.spacing.sm,
+            borderRadius: theme.radius.md,
+            border: highContrast ? `2px solid ${theme.colors.surface}` : "none",
             fontSize: size,
             fontWeight: 700,
             cursor: "pointer",
             fontFamily: "inherit",
-            background: highContrast ? "#000" : "#FEE2E2",
-            color: highContrast ? "#FFF" : "#991B1B"
+            background: highContrast ? theme.colors.text : "#FEE2E2",
+            color: highContrast
+              ? theme.colors.surface
+              : theme.colors.danger,
           }}
         >
           🚪 Sair
         </button>
       </div>
 
-      <p style={{ color: "#FFF", textAlign: "center", fontSize: 11, marginTop: 12, opacity: 0.7, marginBottom: 0 }}>
+      <p
+        style={{
+          color: theme.colors.surface,
+          textAlign: "center",
+          fontSize: 11,
+          marginTop: theme.spacing.sm,
+          opacity: 0.7,
+          marginBottom: 0,
+        }}
+      >
         SeniorEase v1.0
       </p>
     </aside>

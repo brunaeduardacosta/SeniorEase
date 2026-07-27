@@ -1,25 +1,36 @@
-export const theme = {
+export const lightTheme = {
   colors: {
-    primary: "#2563EB",
-    secondary: "#1E3A8A",
+    // Cor de destaque / ações principais (Laranja quente para botões)
+    primary: "#D97706",
 
-    background: "#F8FAFC",
+    // Navegação e áreas estruturais (Cor fria de apoio)
+    secondary: "#1E3A5F",
 
+    // Fundo geral da aplicação (Cinza suave para reduzir brilho)
+    background: "#F1F5F9",
+
+    // Cards e superfícies de primeiro plano
+    // CORRIGIDO: Branco controlado para criar separação nítida sobre o fundo cinza
     surface: "#FFFFFF",
 
-    text: "#1E293B",
+    // Agrupamento de elementos secundários (Recomendação da pesquisa)
+    group: "#E5E7EB",
 
-    textSecondary: "#64748B",
+    // Texto principal com alto contraste de claridade (Tons de preto)
+    text: "#111827",
 
-    success: "#16A34A",
+    // Texto secundário / Legendas
+    // CORRIGIDO: Tom escurecido para atingir contraste seguro de leitura
+    textSecondary: "#475569",
 
-    warning: "#EA580C",
+    // Bordas e divisores demarcados
+    border: "#CBD5E1",
 
-    danger: "#DC2626",
-
-    border: "#E2E8F0",
+    // Estados e Feedbacks visuais
+    success: "#15803D",
+    warning: "#D97706",
+    danger: "#B91C1C",
   },
-
 
   radius: {
     sm: "8px",
@@ -27,18 +38,56 @@ export const theme = {
     lg: "20px",
   },
 
-
   spacing: {
     xs: "8px",
     sm: "16px",
-    md: "24px",
+    md: "24px", // Alinhado com o padrão de 24px/25px das telas
     lg: "32px",
     xl: "48px",
   },
 
+  typography: {
+    // Tamanhos robustos respeitando o limite mínimo de 12px da pesquisa
+    body: "18px",
+    small: "16px",
+    title: "32px",
+  },
+
+  components: {
+    // Altura ideal para clique confortável e sem erros
+    buttonHeight: "56px",
+  },
 
   shadows: {
-    card:
-      "0 4px 12px rgba(0,0,0,0.08)",
+    card: "0 4px 12px rgba(15,23,42,0.08)",
+  },
+};
+
+export type AppTheme = typeof lightTheme;
+
+export const highContrastTheme: AppTheme = {
+  colors: {
+    primary: "#FFD700",       // Amarelo puro
+    secondary: "#FFFFFF",     // Branco puro
+
+    background: "#000000",    // Fundo preto absoluto
+    surface: "#111111",       // Superfície escura de suporte
+    group: "#1F1F1F",
+
+    text: "#FFFFFF",          // Texto branco puro
+    textSecondary: "#FACC15", // Texto secundário amarelo vibrante
+
+    border: "#FFFFFF",        // Divisores nítidos e demarcados
+
+    success: "#00FF00",       // Verde puro
+    warning: "#FFD700",       // Amarelo puro
+    danger: "#FF4444",        // Vermelho puro
+  },
+  radius: lightTheme.radius,
+  spacing: lightTheme.spacing,
+  typography: lightTheme.typography,
+  components: lightTheme.components,
+  shadows: {
+    card: "none", // No alto contraste eliminamos sombras e usamos apenas bordas fortes
   },
 };

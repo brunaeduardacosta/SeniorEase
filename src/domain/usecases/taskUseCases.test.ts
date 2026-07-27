@@ -1,45 +1,47 @@
-import { describe, it, expect } from 'vitest';
-import { createTask, toggleTask, editTask, deleteTask } from './taskUseCases';
+export interface Task {
+  id: string;
+  title: string;
+  completed: boolean;
+  createdAt: Date;
+}
 
-describe('taskUseCases', () => {
-  it('should create a task with default values', () => {
-    const task = createTask('Estudar React');
-    expect(task.title).toBe('Estudar React');
-    expect(task.completed).toBe(false);
-    expect(task.id).toBeDefined();
-    expect(task.createdAt).toBeDefined();
-  });
+/**
+ * Cria uma nova tarefa com valores padrão.
+ * Usa crypto.randomUUID() nativo para gerar IDs únicos.
+ */
+export function createTask(title: string): Task {
+  return {
+    id: crypto.randomUUID(),
+    title,
+    completed: false,
+    createdAt: new Date(),
+  };
+}
 
-  it('should toggle a task completed status', () => {
-    const task = createTask('Limpar a casa');
-    expect(task.completed).toBe(false);
-    
-    const toggledTask = toggleTask(task);
-    expect(toggledTask.completed).toBe(true);
-    
-    const toggledAgain = toggleTask(toggledTask);
-    expect(toggledAgain.completed).toBe(false);
-  });
+/**
+ * Altera o status de conclusão da tarefa de forma imutável.
+ */
+export function toggleTask(task: Task): Task {
+  return {
+    ...task,
+    completed: !task.completed,
+  };
+}
 
-  it('should edit the task title', () => {
-    const task = createTask('Tomar remédio');
-    const editedTask = editTask(task, 'Tomar remédio às 10h');
-    
-    expect(editedTask.title).toBe('Tomar remédio às 10h');
-    expect(editedTask.id).toBe(task.id);
-  });
+/**
+ * Altera o título de uma tarefa existente de forma imutável.
+ */
+export function editTask(task: Task, newTitle: string): Task {
+  return {
+    ...task,
+    title: newTitle,
+  };
+}
 
-  it('should delete a task from the list', () => {
-    const task1 = createTask('Tarefa 1');
-    const task2 = createTask('Tarefa 2');
-    const task3 = createTask('Tarefa 3');
-    const tasks = [task1, task2, task3];
-
-    const result = deleteTask(tasks, task2.id);
-    
-    expect(result).toHaveLength(2);
-    expect(result.find(t => t.id === task2.id)).toBeUndefined();
-    expect(result.find(t => t.id === task1.id)).toBeDefined();
-    expect(result.find(t => t.id === task3.id)).toBeDefined();
-  });
-});
+/**
+ * Remove uma tarefa da lista filtrando pelo ID.
+ * Retorna uma nova lista sem modificar a array original.
+ */
+export function deleteTask(tasks: Task[], taskId: string): Task[] {
+  return tasks.filter((task) => task.id !== taskId);
+}

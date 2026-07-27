@@ -1,9 +1,13 @@
+import { useTheme } from "../../../styles/theme/useTheme";
+
+
 type StatsCardProps = {
   icon: string;
   title: string;
   value: number | string;
   description?: string;
 };
+
 
 
 export function StatsCard({
@@ -14,71 +18,163 @@ export function StatsCard({
 }: StatsCardProps) {
 
 
-return (
-
-<div
-style={{
-background:"#FFFFFF",
-borderRadius:"24px",
-padding:"25px",
-border:"1px solid #E2E8F0",
-boxShadow:
-"0 8px 25px rgba(15,23,42,0.08)",
-}}
->
+  const theme = useTheme();
 
 
-<div
-style={{
-fontSize:"38px",
-marginBottom:15,
-}}
->
-{icon}
-</div>
+
+  return (
+
+    <div
+
+      style={{
+
+        background:
+          theme.colors.surface,
 
 
-<h3
-style={{
-color:"#64748B",
-margin:0,
-fontSize:16,
-}}
->
-{title}
-</h3>
+        borderRadius:
+          theme.radius.lg,
 
 
-<strong
-style={{
-display:"block",
-fontSize:40,
-marginTop:10,
-color:"#1E3A8A",
-}}
->
-{value}
-</strong>
+
+        padding:
+          theme.spacing.md,
 
 
-{
-description && (
 
-<p
-style={{
-color:"#64748B",
-marginTop:10,
-}}
->
-{description}
-</p>
-
-)
-}
+        border:
+          `1px solid ${theme.colors.border}`,
 
 
-</div>
 
-);
+        boxShadow:
+          theme.shadows.card,
+
+
+      }}
+
+    >
+
+
+
+      <div
+
+        style={{
+
+          fontSize:"38px",
+
+          marginBottom:
+            theme.spacing.sm,
+
+        }}
+
+      >
+
+        {icon}
+
+      </div>
+
+
+
+
+
+      <h3
+
+        style={{
+
+          color:
+            theme.colors.textSecondary,
+
+
+          margin:0,
+
+
+          fontSize:16,
+
+
+          fontWeight:600,
+
+        }}
+
+      >
+
+        {title}
+
+      </h3>
+
+
+
+
+
+
+
+      <strong
+
+        style={{
+
+          display:"block",
+
+
+          fontSize:40,
+
+
+          marginTop:
+            theme.spacing.xs,
+
+
+          color:
+            theme.colors.secondary,
+
+
+          fontWeight:800,
+
+        }}
+
+      >
+
+        {value}
+
+      </strong>
+
+
+
+
+
+
+
+      {description && (
+
+        <p
+
+          style={{
+
+            color:
+              theme.colors.textSecondary,
+
+
+            marginTop:
+              theme.spacing.xs,
+
+
+            marginBottom:0,
+
+
+            lineHeight:1.5,
+
+          }}
+
+        >
+
+          {description}
+
+        </p>
+
+      )}
+
+
+
+    </div>
+
+  );
 
 }

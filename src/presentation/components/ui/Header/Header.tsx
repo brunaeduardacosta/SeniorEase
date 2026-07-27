@@ -2,11 +2,14 @@ import { useNavigate } from "react-router-dom";
 
 import { useUser } from "../../../contexts/user/useUser";
 import { useAccessibility } from "../../../contexts/accessibility/useAccessibility";
+import { useTheme } from "../../../styles/theme/useTheme";
 
 
 export function Header() {
 
   const navigate = useNavigate();
+
+  const theme = useTheme();
 
   const { name } = useUser();
 
@@ -60,24 +63,20 @@ export function Header() {
 
         alignItems:"center",
 
-        padding:"20px 35px",
+        padding:`${theme.spacing.sm} ${theme.spacing.lg}`,
 
-        background: highContrast
-          ? "#FFFFFF"
-          : "#FFFFFF",
+        background: theme.colors.surface,
 
 
         borderBottom:
           highContrast
           ? "3px solid #000"
-          : "1px solid #E2E8F0",
+          : `1px solid ${theme.colors.border}`,
 
       }}
 
     >
 
-
-      {/* TEXTO PRINCIPAL */}
 
       <div>
 
@@ -89,14 +88,12 @@ export function Header() {
             margin:0,
 
             color:
-              highContrast
-              ? "#000"
-              : "#1E293B",
+              theme.colors.text,
 
             fontSize:
               fontSize + 8,
 
-            fontWeight:800
+            fontWeight:800,
 
           }}
 
@@ -114,17 +111,15 @@ export function Header() {
 
             style={{
 
-              marginTop:8,
+              marginTop: theme.spacing.xs,
 
               marginBottom:0,
 
               color:
-                highContrast
-                ? "#000"
-                : "#64748B",
+                theme.colors.textSecondary,
+
 
               fontSize:
-
                 fontSize + 1,
 
             }}
@@ -140,7 +135,6 @@ export function Header() {
 
 
 
-        {/* STATUS DE ACESSIBILIDADE */}
 
         {!simplifiedMode && (
 
@@ -148,17 +142,18 @@ export function Header() {
 
             style={{
 
-              marginTop:12,
+              marginTop: theme.spacing.xs,
 
               display:"flex",
 
-              gap:10,
+              gap: theme.spacing.xs,
 
-              flexWrap:"wrap"
+              flexWrap:"wrap",
 
             }}
 
           >
+
 
 
             {highContrast && (
@@ -169,13 +164,17 @@ export function Header() {
 
                   padding:"6px 12px",
 
-                  borderRadius:20,
+                  borderRadius:"20px",
 
-                  background:"#000",
+                  background:
+                    theme.colors.text,
 
-                  color:"#FFF",
+                  color:
+                    theme.colors.surface,
 
-                  fontSize
+                  fontSize,
+
+                  fontWeight:700,
 
                 }}
 
@@ -197,13 +196,17 @@ export function Header() {
 
                   padding:"6px 12px",
 
-                  borderRadius:20,
+                  borderRadius:"20px",
 
-                  background:"#2563EB",
+                  background:
+                    theme.colors.primary,
 
-                  color:"#FFF",
+                  color:
+                    theme.colors.surface,
 
-                  fontSize
+                  fontSize,
+
+                  fontWeight:700,
 
                 }}
 
@@ -228,8 +231,6 @@ export function Header() {
 
 
 
-      {/* PERFIL */}
-
       <button
 
         onClick={()=>navigate("/profile")}
@@ -240,24 +241,22 @@ export function Header() {
 
           height:65,
 
+
           borderRadius:"50%",
 
 
           background:
-
-            highContrast
-            ? "#000"
-            : "#2563EB",
+            theme.colors.primary,
 
 
-          color:"#FFF",
+          color:
+            theme.colors.surface,
 
 
           border:
-
             highContrast
             ? "3px solid #000"
-            :"none",
+            : `2px solid ${theme.colors.border}`,
 
 
           cursor:"pointer",
@@ -274,7 +273,7 @@ export function Header() {
             fontSize + 10,
 
 
-          fontWeight:800
+          fontWeight:800,
 
         }}
 

@@ -1,11 +1,17 @@
 import { useEffect, useRef } from "react";
 import { useAccessibility } from "../../../contexts/accessibility/useAccessibility";
+import { useTheme } from "../../../styles/theme/useTheme";
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
-function getSafeCursorPosition(clientX: number, clientY: number, viewportWidth: number, viewportHeight: number) {
+function getSafeCursorPosition(
+  clientX: number,
+  clientY: number,
+  viewportWidth: number,
+  viewportHeight: number
+) {
   const isValid = Number.isFinite(clientX) && Number.isFinite(clientY);
 
   if (!isValid || (clientX <= 0 && clientY <= 0)) {
@@ -19,31 +25,41 @@ function getSafeCursorPosition(clientX: number, clientY: number, viewportWidth: 
 }
 
 export function LargeCursor() {
+  const theme = useTheme();
   const { largeCursor, highContrast } = useAccessibility();
-  const dotRef = useRef<HTMLDivElement>(null);
-  const ringRef = useRef<HTMLDivElement>(null);
-  const isTouchDevice = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
+  
+  // Agrupamos os elementos sob um único container pai para mover ambos de uma vez só
+  const cursorRef = useRef<HTMLDivElement>(null);
+
+  const isTouchDevice =
+    typeof window !== "undefined" &&
+    window.matchMedia("(pointer: coarse)").matches;
 
   useEffect(() => {
-    if (!largeCursor) {
-      document.body.style.cursor = "";
+    if (!largeCursor || isTouchDevice) {
+      document.documentElement.style.cursor = "";
       return;
     }
 
     const setPosition = (clientX: number, clientY: number) => {
-      const nextPosition = getSafeCursorPosition(clientX, clientY, window.innerWidth, window.innerHeight);
+      const nextPosition = getSafeCursorPosition(
+        clientX,
+        clientY,
+        window.innerWidth,
+        window.innerHeight
+      );
 
-      if (dotRef.current) {
-        dotRef.current.style.left = `${nextPosition.x}px`;
-        dotRef.current.style.top = `${nextPosition.y}px`;
-      }
-      if (ringRef.current) {
-        ringRef.current.style.left = `${nextPosition.x}px`;
-        ringRef.current.style.top = `${nextPosition.y}px`;
+      if (cursorRef.current) {
+        // CORRIGIDO: Usa translate3d para acionar aceleração de hardware (GPU)
+        // Isso remove o lag de processamento e zera o consumo de CPU no movimento
+        cursorRef.current.style.transform = `translate3d(${nextPosition.x}px, ${nextPosition.y}px, 0)`;
       }
     };
 
-    document.body.style.cursor = "none";
+    // Esconde o cursor padrão no documento inteiro de forma consistente
+    document.documentElement.style.cursor = "none";
+    
+    // Centraliza o cursor customizado logo no início
     setPosition(window.innerWidth / 2, window.innerHeight / 2);
 
     const handleMove = (event: PointerEvent) => {
@@ -54,61 +70,69 @@ export function LargeCursor() {
       setPosition(window.innerWidth / 2, window.innerHeight / 2);
     };
 
+    // Usamos pointermove global para capturar interações com precisão máxima
     window.addEventListener("pointermove", handleMove, { passive: true });
     window.addEventListener("resize", handleResize);
 
     return () => {
       window.removeEventListener("pointermove", handleMove);
       window.removeEventListener("resize", handleResize);
-      document.body.style.cursor = "";
+      document.documentElement.style.cursor = "";
     };
-  }, [largeCursor]);
+  }, [largeCursor, isTouchDevice]);
 
-  if (!largeCursor || isTouchDevice) return null;
+  if (!largeCursor || isTouchDevice) {
+    return null;
+  }
 
-  const color = highContrast ? "#0F172A" : "#2563EB";
-  const shadowColor = highContrast ? "rgba(15, 23, 42, 0.35)" : "rgba(37, 99, 235, 0.3)";
+  const cursorColor = highContrast ? theme.colors.text : theme.colors.primary;
+  const shadowColor = highContrast ? "rgba(0,0,0,0.5)" : "rgba(15,23,42,0.15)";
 
   return (
-    <>
+    <div
+      ref={cursorRef}
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        pointerEvents: "none",
+        zIndex: 99999,
+        // Alinha o centro exato do container com a ponta do clique físico
+        margin: "-28px 0 0 -28px", 
+        width: "56px",
+        height: "56px",
+        willChange: "transform",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      {/* CÍRCULO DE FOCO EXTERNO (Alinhado ao tamanho de toque sênior de 56px) */}
       <div
-        ref={dotRef}
         style={{
-          position: "fixed",
-          pointerEvents: "none",
-          zIndex: 99999,
-          width: "20px",
-          height: "20px",
-          borderRadius: "50%",
-          background: color,
-          transform: "translate(-50%, -50%)",
-          left: 0,
-          top: 0,
-          border: "2px solid #FFFFFF",
-          boxShadow: `0 0 0 2px ${color}, 0 8px 18px ${shadowColor}`,
-          transition: "left 0.08s ease, top 0.08s ease",
-          willChange: "left, top",
-        }}
-      />
-      <div
-        ref={ringRef}
-        style={{
-          position: "fixed",
-          pointerEvents: "none",
-          zIndex: 99998,
+          position: "absolute",
           width: "56px",
           height: "56px",
           borderRadius: "50%",
-          border: `2.5px solid ${color}`,
-          opacity: 0.7,
-          transform: "translate(-50%, -50%)",
-          left: 0,
-          top: 0,
-          boxShadow: `0 0 10px ${shadowColor}`,
-          transition: "left 0.08s ease, top 0.08s ease",
-          willChange: "left, top",
+          border: `3px solid ${cursorColor}`, // Aumentado para 3px para dar destaque WCAG AAA
+          opacity: 0.85,
+          boxShadow: `0 4px 12px ${shadowColor}`,
+          boxSizing: "border-box",
         }}
       />
-    </>
+
+      {/* PONTO CENTRAL DE PRECISÃO */}
+      <div
+        style={{
+          position: "absolute",
+          width: "16px",
+          height: "16px",
+          borderRadius: "50%",
+          background: cursorColor,
+          border: `2px solid ${theme.colors.surface}`, // Borda de corte para não sumir em fundos da mesma cor
+          boxSizing: "border-box",
+        }}
+      />
+    </div>
   );
 }

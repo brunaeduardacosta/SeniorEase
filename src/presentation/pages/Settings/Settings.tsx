@@ -15,7 +15,15 @@ export function Settings() {
     setLargeCursor,
     extraConfirmation,
     setExtraConfirmation,
+    elementSpacing, // 1. Resgatamos a preferência de espaçamento do usuário aqui
   } = useAccessibility();
+
+  // 2. Mapeamos o estado de espaçamento para valores reais em pixels adaptados para o Grid
+  const gapSizes = {
+    small: "16px",
+    medium: "25px",  /* Mantém os 25px padrão do perfil como o nível médio */
+    large: "40px",   /* Afasta bem mais para evitar cliques falsos/mãos trêmulas */
+  };
 
   return (
     <MainLayout>
@@ -23,19 +31,31 @@ export function Settings() {
         title="Configurações de acessibilidade"
         subtitle={
           simplifiedMode
-            ? "Ajuste o visual do aplicativo."
-            : "Personalize o SeniorEase para uma experiência mais confortável e adequada à sua visão."
+            ? "Ajuste o visual do aplicativo do seu jeito."
+            : "Personalize o SeniorEase para uma experiência mais confortável e adequada à sua visão ou coordenação."
         }
       />
 
-      <div style={{ maxWidth: "800px" }}>
+      {/* CORRIGIDO: Agora o contêiner usa Grid, mantém o limite de 900 de largura, 
+          mas o gap (espaço entre os itens) reage dinamicamente à escolha do idoso! */}
+      <div 
+        style={{ 
+          display: "grid", 
+          maxWidth: 900, 
+          gap: gapSizes[elementSpacing] || "25px", /* Se der erro, cai no padrão de 25px */
+        }}
+      >
         <FontSizeSetting />
         <SpacingSetting />
 
         <ToggleSetting
           icon="👁️"
           title="Alto contraste"
-          description="Ativa cores em preto e branco com bordas fortes para máxima legibilidade visual."
+          description={
+            simplifiedMode
+              ? "Deixa a tela escura com letras brancas fáceis de ler."
+              : "Ativa cores em preto, branco e amarelo com contornos fortes para máxima legibilidade visual."
+          }
           isActive={highContrast}
           onToggle={setHighContrast}
         />
@@ -43,7 +63,11 @@ export function Settings() {
         <ToggleSetting
           icon="🖱️"
           title="Cursor grande"
-          description="Aumenta o tamanho do cursor do mouse, facilitando identificar onde você está na tela."
+          description={
+            simplifiedMode
+              ? "Deixa a seta do mouse bem maior."
+              : "Aumenta o tamanho do cursor do mouse, facilitando identificar onde você está mexendo na tela."
+          }
           isActive={largeCursor}
           onToggle={setLargeCursor}
         />
@@ -51,7 +75,11 @@ export function Settings() {
         <ToggleSetting
           icon="🎯"
           title="Modo simplificado"
-          description="Remove textos e decorações não essenciais para ajudar a manter o foco no que importa."
+          description={
+            simplifiedMode
+              ? "Desative para voltar a ver todas as explicações longas."
+              : "Esconde textos explicativos longos e decorações para focar apenas nas ações principais."
+          }
           isActive={simplifiedMode}
           onToggle={setSimplifiedMode}
         />
@@ -59,7 +87,11 @@ export function Settings() {
         <ToggleSetting
           icon="⚠️"
           title="Confirmação antes de ações importantes"
-          description="Solicita uma confirmação extra antes de excluir ou realizar ações que não podem ser desfeitas."
+          description={
+            simplifiedMode
+              ? "Pergunta 'Tem certeza?' antes de apagar coisas."
+              : "Solicita uma confirmação extra na tela antes de excluir tarefas ou realizar ações irreversíveis."
+          }
           isActive={extraConfirmation}
           onToggle={setExtraConfirmation}
         />

@@ -1,116 +1,267 @@
+/* ==========================================================================
+   VARIÁVEIS GLOBAIS DE TEMA (Alinhadas com a Pesquisa Sênior)
+   ========================================================================== */
+
+:root {
+  /* Cores principais */
+  --color-primary: #D97706;     /* Laranja quente para botões de ação principal */
+  --color-secondary: #1E3A5F;   /* Azul escuro seguro */
+
+  /* Fundos equilibrados para evitar o ofuscamento do branco #FFF puro */
+  --color-background: #F1F5F9;  /* Cinza azulado suave de fundo */
+  --color-surface: #FFFFFF;     /* Branco controlado para cabeçalhos e cards destacados */
+  --color-group: #E5E7EB;       /* Cinza-claro ideal para agrupar elementos secundários */
+
+  /* Textos de alta claridade */
+  --color-text: #111827;        /* Quase preto para leitura perfeita */
+  --color-text-secondary: #475569; /* Grafite escuro legível */
+
+  /* Elementos */
+  --color-border: #CBD5E1;
+
+  /* Status */
+  --color-success: #15803D;
+  --color-warning: #D97706;
+  --color-danger: #B91C1C;
+
+  /* Acessibilidade Proporcional */
+  --spacing-dynamic: 24px;
+  --font-body: 18px;
+  --font-title: 32px;
+  --button-height: 56px;
+}
+
+/* ==========================================================================
+   ALTO CONTRASTE (WCAG AAA Compliant)
+   ========================================================================== */
+
+body.high-contrast {
+  --color-primary: #FFD700;
+  --color-secondary: #FFFFFF;
+
+  --color-background: #000000;
+  --color-surface: #111111;
+  --color-group: #1F1F1F;
+
+  --color-text: #FFFFFF;
+  --color-text-secondary: #FACC15;
+  --color-border: #FFFFFF;
+
+  --color-success: #00FF00;
+  --color-warning: #FFD700;
+  --color-danger: #FF4444;
+}
+
+/* ==========================================================================
+   ESPAÇAMENTO GLOBAL VIA ATRIBUTO DATASET
+   ========================================================================== */
+
+body[data-spacing="small"] {
+  --spacing-dynamic: 16px;
+}
+
+body[data-spacing="medium"] {
+  --spacing-dynamic: 24px;
+}
+
+body[data-spacing="large"] {
+  --spacing-dynamic: 40px; /* Evita toques errados do público idoso */
+}
+
+/* ==========================================================================
+   RESET & ACESSIBILIDADE BASE (Ajustado para não sumir com o conteúdo)
+   ========================================================================== */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* Remove as margens que afastavam o site da esquerda sem forçar flexbox agressivo */
+html, 
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Garante que os containers injetados pelo React ou bundlers estiquem totalmente */
+#root, 
+.__next {
+  width: 100%;
+  min-height: 100vh;
+}
+
+html {
+  font-size: 16px;
+}
+
 body {
   font-family: Arial, Helvetica, sans-serif;
-  background: linear-gradient(135deg, #F8FAFC 0%, #EEF2FF 100%);
+  background: var(--color-background);
+  color: var(--color-text);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  transition: background .2s ease, color .2s ease;
 }
 
-/* --- Layout Responsivo --- */
+/* ==========================================================================
+   LAYOUT PRINCIPAL
+   ========================================================================== */
+
 .main-layout {
   display: flex;
+  width: 100%;
   min-height: 100vh;
-  background: #F1F5F9;
+  background: var(--color-background);
 }
 
-.sidebar {
-  width: 290px;
-  min-height: 100vh;
-  color: #FFFFFF;
-  padding: 28px 18px 20px;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 4px 0 24px rgba(30, 58, 138, 0.16);
-  position: sticky;
-  top: 0;
-}
-
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.sidebar-nav-scroll {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-.sidebar a,
-.sidebar button {
-  outline: none;
-}
-
-.sidebar a:focus-visible,
-.sidebar button:focus-visible {
-  outline: 3px solid #FFFFFF;
-  outline-offset: 3px;
-}
-
-.sidebar-footer {
-  position: sticky;
-  bottom: 0;
-  z-index: 1;
-  margin-top: 12px;
-  padding-top: 8px;
-}
-
+/* Se você usa uma div para abraçar o conteúdo ao lado da sidebar */
 .content-wrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 0; /* Previne overflow */
+  min-width: 0; /* Previne que elementos com texto quebrem o flexbox lateral */
 }
+
+/* ==========================================================================
+   SIDEBAR (Menu Lateral Escuro)
+   ========================================================================== */
+
+.sidebar {
+  width: 290px;
+  min-height: 100vh;
+  padding: 28px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-secondary);
+  color: #FFFFFF; /* Texto branco puro sobre o fundo escuro garante legibilidade */
+  position: sticky;
+  top: 0;
+  box-shadow: 4px 0 24px rgba(15, 23, 42, .15);
+  flex-shrink: 0; /* Impede a sidebar de ser esmagada quando faltar espaço */
+}
+
+body.high-contrast .sidebar {
+  background: var(--color-background);
+  color: var(--color-text);
+  box-shadow: none;
+  border-right: 3px solid var(--color-border);
+}
+
+/* ==========================================================================
+   NAVEGAÇÃO E FOCO
+   ========================================================================== */
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-dynamic);
+}
+
+.sidebar-nav-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Força a barra de rolagem a ficar sempre visível para evitar desorientação */
+.sidebar-nav-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-nav-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+body.high-contrast .sidebar-nav-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+}
+
+/* Foco acessível com auto contraste baseado no local onde está inserido */
+.sidebar a:focus-visible,
+.sidebar button:focus-visible {
+  outline: 3px solid currentColor; /* Usa o branco no modo normal e amarelo/branco no alto contraste */
+  outline-offset: 3px;
+}
+
+/* Foco para os elementos do conteúdo geral */
+.main-content a:focus-visible,
+.main-content button:focus-visible,
+.main-content input:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* ==========================================================================
+   HEADER & CONTEÚDO
+   ========================================================================== */
 
 .app-header {
   min-height: 80px;
-  background: #FFFFFF;
+  background: var(--color-surface); /* Destaca-se como primeiro plano limpo */
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 20px 30px;
+  border-bottom: 2px solid var(--color-border);
+  width: 100%;
 }
 
 .main-content {
   flex: 1;
-  padding: 35px;
-  background: #F8FAFC;
+  padding: var(--spacing-dynamic); /* Respeita a escolha de tamanho do usuário */
+  background: var(--color-background);
+  width: 100%;
 }
 
-/* Media Queries para Telas Menores e Zoom Alto */
+/* ==========================================================================
+   COMPORTAMENTOS DE ACESSIBILIDADE EXTRA
+   ========================================================================== */
+
+body.simplified-mode {
+  letter-spacing: .05em; /* Ligeiramente aumentado para facilitar leitura de palavras complexas */
+}
+
+body.large-cursor,
+body.large-cursor * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24' fill='black' stroke='white' stroke-width='2'%3E%3Cpath d='M3 3l12 12-4.5 1 4.5 6-3.5 2-4.5-6-4 4V3z'/%3E%3C/svg%3E"), auto !important;
+}
+
+/* Garantia para os ícones baseados no grid de 8pt mencionado na pesquisa */
+.icon, svg:not([fill="none"]) {
+  min-width: 32px;
+  min-height: 32px;
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE ACESSÍVEL
+   ========================================================================== */
+
 @media (max-width: 768px) {
   .main-layout {
     flex-direction: column;
   }
+
   .sidebar {
     width: 100%;
     min-height: auto;
     height: auto;
     position: relative;
-    padding: 20px;
+    padding: 20px var(--spacing-dynamic);
   }
-  .sidebar-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .sidebar-nav > * {
-    flex: 1;
-    min-width: 140px;
-    text-align: center !important;
-  }
+
   .app-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 15px;
-    padding: 20px;
+    padding: 20px var(--spacing-dynamic);
   }
+
   .main-content {
-    padding: 20px;
+    padding: var(--spacing-dynamic); 
   }
 }
