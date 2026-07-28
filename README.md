@@ -1,24 +1,196 @@
-# React + TypeScript + Vite
+````markdown
+# 🧓 SeniorEase
+  Plataforma desenvolvida para auxiliar pessoas idosas na organização da rotina diária, promovendo autonomia, acessibilidade e inclusão digital.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-Currently, two official plugins are available:
+## 📖 Sobre o projeto
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+O **SeniorEase** é uma plataforma desenvolvida com foco na acessibilidade digital para pessoas idosas.
 
-## React Compiler
+Seu objetivo é oferecer uma experiência simples, intuitiva e confortável para auxiliar na organização das atividades do dia a dia, reunindo ferramentas como gerenciamento de tarefas, agenda de compromissos, controle de medicamentos e recursos de acessibilidade.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+O projeto foi desenvolvido aplicando princípios de UX, UI e Design Centrado no Usuário (DCU), considerando recomendações voltadas à usabilidade para o público idoso.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🎯 Objetivos
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
+- Facilitar a organização da rotina.
+- Incentivar a autonomia do usuário.
+- Melhorar a acessibilidade digital.
+- Reduzir dificuldades de navegação.
+- Promover inclusão digital.
+- Aplicar boas práticas de UX para idosos.
+
+---
+
+# ✨ Funcionalidades
+
+### 📋 Gerenciamento de tarefas
+
+- Cadastro de tarefas
+- Conclusão de tarefas
+- Exclusão de tarefas
+- Barra de progresso
+- Estatísticas
+
+---
+
+### 📅 Agenda
+
+- Cadastro de compromissos
+- Calendário mensal
+- Visualização dos eventos
+- Próximos compromissos
+
+---
+
+### 💊 Medicamentos
+
+- Cadastro de medicamentos
+- Horários personalizados
+- Frequência de uso
+- Lembretes automáticos
+- Histórico de medicamentos
+
+---
+
+### 📊 Dashboard
+
+- Estatísticas das tarefas
+- Barra de progresso
+- Próximos compromissos
+- Próximos medicamentos
+- Relógio
+- Dicas de saúde
+
+---
+
+### ♿ Recursos de acessibilidade
+
+- Aumento do tamanho da fonte
+- Alto contraste
+- Cursor ampliado
+- Espaçamento entre elementos
+- Modo simplificado
+- Confirmação antes de ações importantes
+
+---
+
+## 🖥️ Tecnologias utilizadas
+
+- React
+- TypeScript
+- Vite
+- React Router DOM
+- Context API
+- LocalStorage
+- HTML5
+- CSS3
+
+---
+
+## 📂 Estrutura do projeto
+
+```text
+src
+│
+├── application
+├── domain
+│   └── entities
+├── infrastructure
+├── presentation
+│   ├── components
+│   ├── contexts
+│   ├── layouts
+│   ├── pages
+│   ├── routes
+│   ├── store
+│   └── styles
+└── main.tsx
+```
+
+---
+
+## 🚀 Como executar
+
+Clone o repositório:
+
+```bash
+git clone https://github.com/brunaeduardacosta/SeniorEase.git
+```
+
+Entre na pasta:
+
+```bash
+cd SeniorEase
+```
+
+Instale as dependências:
+
+```bash
+npm install
+```
+
+Execute o projeto:
+
+```bash
+npm run dev
+```
+
+A aplicação ficará disponível em:
+
+```
+http://localhost:5173
+```
+
+---
+
+## 📱 Melhorias futuras
+
+- Aplicativo Mobile (React Native + Expo)
+- Login e autenticação
+- Sincronização em nuvem
+- Notificações Push
+- Lista de compras
+- Bloco de notas
+- Compartilhamento com familiares
+- Comandos por voz
+- Integração com Google Calendar
+- Relatórios de saúde
+
+---
+
+## 👥 Público-alvo
+
+- Pessoas idosas
+- Pessoas com baixa visão
+- Pessoas com dificuldades motoras
+- Usuários com pouca experiência em tecnologia
+
+---
+
+## 📚 Fundamentação
+
+O desenvolvimento foi baseado em estudos sobre acessibilidade digital para idosos, considerando recomendações como:
+
+- Alto contraste entre texto e fundo
+- Fontes maiores
+- Ícones intuitivos
+- Botões grandes
+- Menor carga cognitiva
+- Navegação simplificada
+- Feedback visual
+- Linguagem clara
+
+---
+
+## 📄 Desenvolvido
+  Desenvolvido com ❤️ para promover acessibilidade, autonomia e inclusão digital.
+por: Bruna Eduarda; Arthur Tenorio.
+````
+
     files: ['**/*.{ts,tsx}'],
     extends: [
       // Other configs...
